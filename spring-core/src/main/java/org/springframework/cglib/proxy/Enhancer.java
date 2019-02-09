@@ -257,6 +257,7 @@ public class Enhancer extends AbstractClassGenerator {
 	 * @see #setInterfaces(Class[])
 	 */
 	public void setSuperclass(Class superclass) {
+		//org.springframework.cglib.core.ClassEmitter;
 		if (superclass != null && superclass.isInterface()) {
 			setInterfaces(new Class[]{superclass});
 		}
