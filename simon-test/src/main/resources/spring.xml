@@ -5,4 +5,8 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
     
     <bean id="testService" class="org.simon.test1.TestService"/>
+
+	<bean id="mys1" class="org.simon.ioc.beandefinition.Service"/>
+	<bean id="mys2" class="org.simon.ioc.beandefinition.Service2" parent="mys1"/>
+
 </beans>

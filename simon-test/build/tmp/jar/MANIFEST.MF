@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Title: simon-test
-Automatic-Module-Name: simon.test
-Implementation-Version: 5.2.0.BUILD-SNAPSHOT
-Created-By: 1.8.0_191 (Oracle Corporation)
-

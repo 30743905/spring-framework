@@ -239,12 +239,15 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	protected <T> T doGetBean(final String name, @Nullable final Class<T> requiredType,
 			@Nullable final Object[] args, boolean typeCheckOnly) throws BeansException {
 
+		//解析beanName 因为如果是FactoryBean会带上&符号
 		final String beanName = transformedBeanName(name);
 		Object bean;
 
 		// Eagerly check singleton cache for manually registered singletons.
+		// 从已经创建好的singletonObjects集合中验证是否已经存在该实例，已经存在了就没必要再调用生成了，不过需要注意到单例才是这样的，针对非单例的bean不是这样的
 		Object sharedInstance = getSingleton(beanName);
 		if (sharedInstance != null && args == null) {
+			//如果已经存在
 			if (logger.isTraceEnabled()) {
 				if (isSingletonCurrentlyInCreation(beanName)) {
 					logger.trace("Returning eagerly cached instance of singleton bean '" + beanName +
@@ -254,30 +257,35 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					logger.trace("Returning cached instance of singleton bean '" + beanName + "'");
 				}
 			}
+			//主要是对FactoryBean进行处理
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		}
 
 		else {
 			// Fail if we're already creating this bean instance:
 			// We're assumably within a circular reference.
+			// 如果是当前处理的beanName已经在prototype容器中（同一个线程）被处理，则抛出异常
+			// 看源码会发现是存储在ThreadLocal中的
 			if (isPrototypeCurrentlyInCreation(beanName)) {
 				throw new BeanCurrentlyInCreationException(beanName);
 			}
 
 			// Check if bean definition exists in this factory.
 			BeanFactory parentBeanFactory = getParentBeanFactory();
-			if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {
+			if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {// 如果父类存在而且当前需要处理的beanName还不在容器中，需要由父类去调用生成相关的实例对象
 				// Not found -> check parent.
+				// 这个originalBeanName就是去掉name中存在的多于的&，至多只保留一个&
 				String nameToLookup = originalBeanName(name);
 				if (parentBeanFactory instanceof AbstractBeanFactory) {
 					return ((AbstractBeanFactory) parentBeanFactory).doGetBean(
 							nameToLookup, requiredType, args, typeCheckOnly);
 				}
+
 				else if (args != null) {
 					// Delegation to parent with explicit args.
 					return (T) parentBeanFactory.getBean(nameToLookup, args);
 				}
-				else if (requiredType != null) {
+				else if (requiredType != null) {// 没有参数
 					// No args -> delegate to standard getBean method.
 					return parentBeanFactory.getBean(nameToLookup, requiredType);
 				}
@@ -287,23 +295,34 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			}
 
 			if (!typeCheckOnly) {
+				// 传入的默认typeCheckOnly是false，把当前的beanName加入到准备实例化的alreadyCreated的容器中，存在并发的情况，源码使用了synchronized
 				markBeanAsCreated(beanName);
 			}
 
+			// 上述步骤完成，对一个普通的bean而言就是加入到准备实例化的容器中
+
 			try {
+				// 综合beanName本身映射的beandefinition和可能存在的父类beandefinition的属性，存储到一个全新的对象RootBeanDefinition中
 				final RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
 				checkMergedBeanDefinition(mbd, beanName, args);
 
 				// Guarantee initialization of beans that the current bean depends on.
+				//获取它的依赖bean
+				// 当前bean引用的其他bean，那很明显需要先实例化依赖的bean，再实例化本身
 				String[] dependsOn = mbd.getDependsOn();
 				if (dependsOn != null) {
-					for (String dep : dependsOn) {
+					for (String dep : dependsOn) {//循环生产所依赖的bean
 						if (isDependent(beanName, dep)) {
+							// 如果当前beanName和dep存在相互依赖的情况，抛出异常
 							throw new BeanCreationException(mbd.getResourceDescription(), beanName,
 									"Circular depends-on relationship between '" + beanName + "' and '" + dep + "'");
 						}
+						// 往当前的dependentBeanMap和dependenciesForBeanMap填入依赖关系
+						// 其中dependentBeanMap 是存储的当前对象依赖什么
+						// dependenciesForBeanMap 是被谁依赖被当前对象所依赖
 						registerDependentBean(dep, beanName);
 						try {
+							// 每一个依赖的bean实例化
 							getBean(dep);
 						}
 						catch (NoSuchBeanDefinitionException ex) {
@@ -314,9 +333,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 
 				// Create bean instance.
-				if (mbd.isSingleton()) {
+				if (mbd.isSingleton()) {//判断是否单例
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
+							//真正生成bean的方法，这里会对循环依赖问题进行处理
 							return createBean(beanName, mbd, args);
 						}
 						catch (BeansException ex) {
