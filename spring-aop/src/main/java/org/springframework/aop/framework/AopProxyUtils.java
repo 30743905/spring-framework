@@ -116,6 +116,7 @@ public abstract class AopProxyUtils {
 	 * @see DecoratingProxy
 	 */
 	static Class<?>[] completeProxiedInterfaces(AdvisedSupport advised, boolean decoratingProxy) {
+		//获取目标对象实现的接口
 		Class<?>[] specifiedInterfaces = advised.getProxiedInterfaces();
 		if (specifiedInterfaces.length == 0) {
 			// No user-specified interfaces: check whether target class is an interface.
@@ -130,8 +131,14 @@ public abstract class AopProxyUtils {
 				specifiedInterfaces = advised.getProxiedInterfaces();
 			}
 		}
+		//是否新增SpringProxy,在AdvisedSupport#isInterfaceProxied方法中会判断传入的接口是否已经由目标对象实现。
+		// 此处传入SpringProxy.class判断目标对象是否已经实现该接口，如果没有实现则在代理对象中需要新增SpringProxy，如果实现了则不必新增。
 		boolean addSpringProxy = !advised.isInterfaceProxied(SpringProxy.class);
+		//是否新增Advised接口，注意不是Advice通知接口。ProxyConfig#isOpaque方法用于返回由这个配置创建的代理对象是否应该避免被强制转换为Advised类型。
+		// 还有一个条件和上面的方法一样，同理，传入Advised.class判断目标对象是否已经实现该接口，如果没有实现则在代理对象中需要新增Advised，如果实现了则不必新增。
 		boolean addAdvised = !advised.isOpaque() && !advised.isInterfaceProxied(Advised.class);
+		//是否新增DecoratingProxy接口，同样的判断条件有两个，第一个参数decoratingProxy，在调用completeProxiedInterfaces方法时传入的是true，
+		// 第二个判断条件和上面一样判断被代理的目标对象是否已经实现了DecoratingProxy接口。通常情况下这个接口也会被加入到代理对象中，这是Spring4.3新增的。
 		boolean addDecoratingProxy = (decoratingProxy && !advised.isInterfaceProxied(DecoratingProxy.class));
 		int nonUserIfcCount = 0;
 		if (addSpringProxy) {
@@ -143,8 +150,11 @@ public abstract class AopProxyUtils {
 		if (addDecoratingProxy) {
 			nonUserIfcCount++;
 		}
+		//代理类的接口一共是目标对象的接口+上面三个接口SpringProxy、Advised、DecoratingProxy
 		Class<?>[] proxiedInterfaces = new Class<?>[specifiedInterfaces.length + nonUserIfcCount];
+		//将目标对象的接口拷贝，System.arraycopy(src, srcPos, dest, destPos, length)
 		System.arraycopy(specifiedInterfaces, 0, proxiedInterfaces, 0, specifiedInterfaces.length);
+		//下面就是讲那三个接口加入到specifiedInterfaces数组中并返回
 		int index = specifiedInterfaces.length;
 		if (addSpringProxy) {
 			proxiedInterfaces[index] = SpringProxy.class;

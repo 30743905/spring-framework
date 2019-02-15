@@ -67,10 +67,12 @@ public class ProxyFactory extends ProxyCreatorSupport {
 	 * delegating to a target, like in the case of remoting proxies.
 	 * @param proxyInterface the interface that the proxy should implement
 	 * @param interceptor the interceptor that the proxy should invoke
+	 *
+	 * 指定待实现接口和拦截器
 	 */
 	public ProxyFactory(Class<?> proxyInterface, Interceptor interceptor) {
-		addInterface(proxyInterface);
-		addAdvice(interceptor);
+		addInterface(proxyInterface);//JDK代理需要接口
+		addAdvice(interceptor);//添加增强逻辑
 	}
 
 	/**
@@ -107,6 +109,7 @@ public class ProxyFactory extends ProxyCreatorSupport {
 	 * @return the proxy object
 	 */
 	public Object getProxy(@Nullable ClassLoader classLoader) {
+		//先创建AopProxy实现类对象，然后再调用getProxy为目标bean创建代理对象
 		return createAopProxy().getProxy(classLoader);
 	}
 

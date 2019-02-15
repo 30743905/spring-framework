@@ -155,34 +155,47 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 	}
 
 
+	/**
+	 * ReflectiveMethodInvocation#proceed，这是一个递归方法，退出条件就是调用完了拦截链中的所有拦截器方法后，再调用目标对象的方法。
+	 *  这个方法的逻辑在于通过拦截器链，逐个获取其中的拦截器，再通过匹配判断，判断是否适用，如果适用则取出拦截器中的通知器并通过通知器的invoke方法调用，如果不适用则递归调用。
+	 * @return
+	 * @throws Throwable
+	 */
 	@Override
 	@Nullable
 	public Object proceed() throws Throwable {
 		//	We start with an index of -1 and increment early.
+		//调用完了所有的拦截链中拦截器的增强方法，直接调用目标对象的方法并退出
 		if (this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() - 1) {
+			//这个方法就是调用AopUtils.invokeJoinpointUsingReflection，上面提到过。
 			return invokeJoinpoint();
 		}
 
+		//从拦截器链中获取拦截器
 		Object interceptorOrInterceptionAdvice =
 				this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
+		//这里进行动态匹配
 		if (interceptorOrInterceptionAdvice instanceof InterceptorAndDynamicMethodMatcher) {
 			// Evaluate dynamic method matcher here: static part will already have
 			// been evaluated and found to match.
 			InterceptorAndDynamicMethodMatcher dm =
 					(InterceptorAndDynamicMethodMatcher) interceptorOrInterceptionAdvice;
 			Class<?> targetClass = (this.targetClass != null ? this.targetClass : this.method.getDeclaringClass());
+			//这里如果和定义的切点匹配，那么这个通知就会得到执行
 			if (dm.methodMatcher.matches(this.method, targetClass, this.arguments)) {
 				return dm.interceptor.invoke(this);
 			}
 			else {
 				// Dynamic matching failed.
 				// Skip this interceptor and invoke the next in the chain.
+				//不适用递归继续获取拦截器进行匹配、判断、调用
 				return proceed();
 			}
 		}
-		else {
+		else {//这里判断出这个拦截器是一个MethodInterceptor则直接调用
 			// It's an interceptor, so we just invoke it: The pointcut will have
 			// been evaluated statically before this object was constructed.
+			//动态匹配失败则直接调用
 			return ((MethodInterceptor) interceptorOrInterceptionAdvice).invoke(this);
 		}
 	}

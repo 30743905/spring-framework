@@ -745,6 +745,8 @@ public abstract class ClassUtils {
 	 * @param classLoader the ClassLoader that the interfaces need to be visible in
 	 * (may be {@code null} when accepting all declared interfaces)
 	 * @return all interfaces that the given object implements as a Set
+	 *
+	 * 获取给定类/父类/父父类...实现的接口集合，如果clazz本身就是一个接口，则直接返回给class
 	 */
 	public static Set<Class<?>> getAllInterfacesForClassAsSet(Class<?> clazz, @Nullable ClassLoader classLoader) {
 		Assert.notNull(clazz, "Class must not be null");

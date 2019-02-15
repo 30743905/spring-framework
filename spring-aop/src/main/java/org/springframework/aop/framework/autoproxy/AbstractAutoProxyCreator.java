@@ -449,15 +449,25 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		ProxyFactory proxyFactory = new ProxyFactory();
 		proxyFactory.copyFrom(this);
 
+		/*
+		 * 默认配置下，或用户显式配置 proxy-target-class = "false" 时，
+		 * 这里的 proxyFactory.isProxyTargetClass() 也为 false
+		 */
 		if (!proxyFactory.isProxyTargetClass()) {
 			if (shouldProxyTargetClass(beanClass, beanName)) {
 				proxyFactory.setProxyTargetClass(true);
 			}
 			else {
+				/*
+				 * 检测 beanClass 是否实现了有效接口(会过滤一些无效接口，如DisposableBean、Closeable、没有任何方法的接口等),
+				 * 有则将实现的接口集合通过proxyFactory.addInterface设置到ProxyFactory对象中；
+				 * 若未实现，则将proxyFactory 的成员变量 proxyTargetClass 设为 true，采用cglib代理方式
+				 */
 				evaluateProxyInterfaces(beanClass, proxyFactory);
 			}
 		}
 
+		//specificInterceptors 中若包含有 Advice，此处将 Advice 转为 Advisor
 		Advisor[] advisors = buildAdvisors(beanName, specificInterceptors);
 		proxyFactory.addAdvisors(advisors);
 		proxyFactory.setTargetSource(targetSource);
