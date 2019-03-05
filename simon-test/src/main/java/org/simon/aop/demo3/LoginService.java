@@ -1,4 +1,4 @@
-package org.simon.aop.proxyfactory2;
+package org.simon.aop.demo3;
 
 /**
  * @author Administrator
@@ -7,6 +7,6 @@ package org.simon.aop.proxyfactory2;
  * @Description:TODO
  */
 public interface LoginService {
-	boolean login(User user);
-	boolean test(User user);
+	boolean greetTo(String name);
+	boolean serverTo(String name);
 }

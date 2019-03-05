@@ -89,6 +89,23 @@ import org.springframework.util.ObjectUtils;
  * @see org.aopalliance.intercept.MethodInterceptor
  * @see org.springframework.aop.Advisor
  * @see Advised
+ *
+ *
+ * 下面描述ProxyFactoryBean的属性：
+ * 	1：proxyTargetClass：这个属性为true时，目标类本身被代理而不是目标类的接口。如果这个属性值被设为true，CGLIB代理将被创建
+ * 	2：optimize：用来控制通过CGLIB创建的代理是否使用激进的优化策略。除非完全了解AOP代理如何处理优化，否则不推荐用户使用这个设置。目前这个属性仅用于CGLIB代理；对于
+ * JDK动态代理（缺省代理）无效。
+ *  3：frozen：用来控制代理工厂被配置之后，是否还允许修改通知。缺省值为false（即在代理被配置之后，不允许修改代理的配置）。
+ *  4：exposeProxy：决定当前代理是否被保存在一个ThreadLocal中以便被目标对象访问。（目标对象本身可以通过MethodInvocation来访问，因此不需要ThreadLocal。） 如果个目标
+ * 对象需要获取代理而且exposeProxy属性被设为true，目标对象可以使用AopContext.currentProxy()方法。
+ *  5：aopProxyFactory：使用AopProxyFactory的实现。这提供了一种方法来自定义是否使用动态代理，CGLIB或其它代理策略。 缺省实现将根据情况选择动态代理或者CGLIB。一般情况下应该没有使用这个属性的需要；它是被设计来在Spring
+ * 1.1中添加新的代理类型的。
+ * 6：proxyInterfaces：需要代理的接口名的字符串数组。如果没有提供，将为目标类使用一个CGLIB代理
+ * 7：interceptorNames：Advisor的字符串数组，可以包括拦截器或其它通知的名字。顺序是很重要的，排在前面的将被优先服务。就是说列表里的第一个拦截器
+ * 将能够第一个拦截调用。这里的名字是当前工厂中bean的名字，包括父工厂中bean的名字。这里你不能使用bean的引用因为这会导致ProxyFactoryBean忽略通知的单例设置。
+ * 你可以把一个拦截器的名字加上一个星号作为后缀（*）。这将导致这个应用程序里所有名字以星号之前部分开头的advisor都被应用。
+ *
+ *
  */
 @SuppressWarnings("serial")
 public class ProxyFactoryBean extends ProxyCreatorSupport

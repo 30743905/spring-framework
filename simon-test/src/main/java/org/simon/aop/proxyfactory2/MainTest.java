@@ -2,6 +2,10 @@ package org.simon.aop.proxyfactory2;
 
 import org.junit.Test;
 import org.springframework.aop.framework.ProxyFactory;
+import org.springframework.aop.support.DefaultPointcutAdvisor;
+import org.springframework.aop.support.NameMatchMethodPointcut;
+
+import java.util.Arrays;
 
 /**
  * @author Administrator
@@ -31,5 +35,27 @@ public class MainTest {
 		LoginService service = (LoginService) factory.getProxy();
 		System.out.println("proxy type:"+service.getClass().getName());
 		System.out.println(service.login(new User("xinchun.wang","123456")));
+	}
+
+	@Test
+	public void test1() {
+		ProxyFactory factory = new ProxyFactory();
+
+		NameMatchMethodPointcut pointcut = new NameMatchMethodPointcut();
+		pointcut.addMethodName("test");
+		DefaultPointcutAdvisor advisor = new DefaultPointcutAdvisor(pointcut, new BeforeAdvice1());
+		factory.addAdvisor(advisor);
+
+		LoginService target = new LoginServiceImpl();
+		factory.setTarget(target);
+
+		factory.setProxyTargetClass(true);
+		//factory.setInterfaces(new Class[]{LoginService.class});
+
+		LoginService service = (LoginService) factory.getProxy();
+		System.out.println("proxy type:"+service.getClass().getName());
+		Arrays.stream(service.getClass().getInterfaces()).forEach(x -> System.out.println("interface:"+x.getName()));
+		System.out.println(service.getClass().getSuperclass());
+		System.out.println(service.test(new User("xinchun.wang","123456")));
 	}
 }
