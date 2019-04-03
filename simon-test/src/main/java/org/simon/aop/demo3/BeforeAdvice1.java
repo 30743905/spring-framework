@@ -1,8 +1,10 @@
 package org.simon.aop.demo3;
 
 import org.springframework.aop.MethodBeforeAdvice;
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  * @author Administrator
@@ -14,7 +16,15 @@ import java.lang.reflect.Method;
 public class BeforeAdvice1 implements MethodBeforeAdvice {
 	public void before(Method method, Object[] args, Object target)
 			throws Throwable {
+
+		LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
+		String[] params = u.getParameterNames(method);
+		System.out.println("params:"+Arrays.toString(params));
+
+
+
 		System.out.println("BeforeAdvice1.before() execute ");
+
 	}
 }
 

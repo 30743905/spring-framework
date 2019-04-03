@@ -27,4 +27,11 @@ public class LoginServiceImpl implements LoginService {
 		System.out.println("serverTo:"+name);
 		return false;
 	}
+
+	@Override
+	public void test(String k, int age, Object ccc1) {
+
+	}
+
+
 }

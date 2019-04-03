@@ -9,4 +9,6 @@ package org.simon.aop.demo3;
 public interface LoginService {
 	boolean greetTo(String name);
 	boolean serverTo(String name);
+
+	void test(String k, int age, Object ccc1);
 }

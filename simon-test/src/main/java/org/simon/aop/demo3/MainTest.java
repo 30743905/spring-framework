@@ -1,6 +1,8 @@
 package org.simon.aop.demo3;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
@@ -20,9 +22,15 @@ public class MainTest {
 
 		loginService.greetTo("zhangsan");
 		loginService.serverTo("zhangsan");
+		loginService.test("ss", 10, "fjafoa");
 
 		//System.out.println(context.getBean(LoginServiceImpl.class).getClass().getName());
 		System.out.println(context.getBean(LoginService.class).getClass().getName());
+
+		Logger logger = LoggerFactory.getLogger(MainTest.class);
+		logger.info("abc111");
+
+		//org.apache.commons.logging.impl.SLF4JLog ab = null;
 	}
 
 }

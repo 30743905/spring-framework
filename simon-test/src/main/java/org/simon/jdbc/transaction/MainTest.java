@@ -1,8 +1,12 @@
-package org.simon.transaction;
+package org.simon.jdbc.transaction;
 
 import org.junit.Test;
-import org.simon.transaction.dao.LogDao;
-import org.simon.transaction.dao.UserDao;
+import org.simon.jdbc.transaction.dao.LogDao;
+import org.simon.jdbc.transaction.dao.UserDao;
+
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Queue;
 
 
 /**
@@ -23,6 +27,11 @@ public class MainTest {
 
 			userDao.updateUser();
 			logDao.saveLog();
+
+			Queue<String> queue = new LinkedList();
+			Deque<String> deque = new LinkedList<>();
+
+
 		}catch (Exception e){
 			e.printStackTrace();
 		}

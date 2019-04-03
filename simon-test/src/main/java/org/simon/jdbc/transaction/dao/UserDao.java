@@ -1,6 +1,6 @@
-package org.simon.transaction.dao;
+package org.simon.jdbc.transaction.dao;
 
-import org.simon.transaction.DBConnection;
+import org.simon.jdbc.transaction.DBConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

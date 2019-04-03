@@ -1,6 +1,4 @@
-package org.simon.transaction;
-
-import org.simon.aop.proxyfactory2.User;
+package org.simon.jdbc.transaction;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,9 +12,9 @@ import java.sql.SQLException;
  */
 public class DBConnection {
 
-	private static String url = "jdbc:mysql://localhost:3306/test001?useUnicode=true&useSSL=true&serverTimezone=GMT%2B8";
+	private static String url = "jdbc:mysql://192.168.236.128:3306/test?useUnicode=true&useSSL=true&serverTimezone=GMT%2B8";
 	private static String username = "root";
-	private static String password = "root";
+	private static String password = "123456";
 
 
 	public static Connection getConnection(){
