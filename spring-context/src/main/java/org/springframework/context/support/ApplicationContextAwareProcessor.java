@@ -74,6 +74,10 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 	}
 
 
+	/**
+	 * 首先判断此bean是不是各种的Aware，如果是它列举的那几个Aware就获取Bean工厂的权限，可以向容器中导入相关的上下文环境，
+	 * 目的是为了Bean实例能够获取到相关的上下文，调用invokeAwareInterfaces(bean)，向容器中添加相关接口的上下文环境
+	 */
 	@Override
 	@Nullable
 	public Object postProcessBeforeInitialization(final Object bean, String beanName) throws BeansException {
@@ -99,6 +103,9 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 		return bean;
 	}
 
+	/**
+	 * 判断Aware类型注入不同的Spring上下文环境对象
+	 */
 	private void invokeAwareInterfaces(Object bean) {
 		if (bean instanceof Aware) {
 			if (bean instanceof EnvironmentAware) {
