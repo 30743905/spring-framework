@@ -144,6 +144,11 @@ public abstract class AnnotationConfigUtils {
 	 * that this registration was triggered from. May be {@code null}.
 	 * @return a Set of BeanDefinitionHolders, containing all bean definitions
 	 * that have actually been registered by this call
+	 *该方法主要是向容器注册了一组基础设施BeanPostProcessor的定义,这些bean定义生成的BeanPostProcessor实例
+	 * 被框架自己用于识别注解配置类中的bean定义。它们里面还有一些作用于BeanDefinitionRegistry(容器级)的BeanDefinitionRegistryPostProcessor,
+	 * 和作用于BeanFactory(容器级)的BeanFactoryPostProcessor,其它才是一般bean级别的BeanPostProcessor。
+	 *
+	 *
 	 */
 	public static Set<BeanDefinitionHolder> registerAnnotationConfigProcessors(
 			BeanDefinitionRegistry registry, @Nullable Object source) {

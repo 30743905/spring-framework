@@ -1254,6 +1254,18 @@ public abstract class ClassUtils {
 	 * @return the specific target method, or the original method if the
 	 * {@code targetClass} does not implement it
 	 * @see #getInterfaceMethodIfPossible
+	 *
+	 * 获得最匹配的一个可以执行的方法；比如传入IEmployeeService.someLogic方法，在EmployeeServiceImpl类上找到匹配的EmployeeServiceImpl.someLogic方法，这个方法是一个可以执行的方法；
+	 * Method interfaceMethod=ClassUtils.getMethod(IEmployeeService.class, "someLogic");
+	 * System.out.println(ClassUtils.getQualifiedMethodName(interfaceMethod));
+	 * Method targetMethod=ClassUtils.getMostSpecificMethod(interfaceMethod, EmployeeServiceImpl.class);
+	 * System.out.println(ClassUtils.getQualifiedMethodName(targetMethod));
+	 * ------------输出结果：
+	 * cn.wolfcode.springboot.utilstest.IEmployeeService.someLogic
+	 * cn.wolfcode.springboot.utilstest.EmployeeServiceImpl.someLogic
+	 *
+	 *
+	 *
 	 */
 	public static Method getMostSpecificMethod(Method method, @Nullable Class<?> targetClass) {
 		if (targetClass != null && targetClass != method.getDeclaringClass() && isOverridable(method, targetClass)) {

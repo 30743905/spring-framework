@@ -504,6 +504,9 @@ public abstract class AnnotationUtils {
 	 * @param annotationType the annotation type to look for
 	 * @return the first matching annotation, or {@code null} if not found
 	 * @see #getAnnotation(Method, Class)
+	 *
+	 * 查找方法上注解
+	 *
 	 */
 	@SuppressWarnings("unchecked")
 	@Nullable

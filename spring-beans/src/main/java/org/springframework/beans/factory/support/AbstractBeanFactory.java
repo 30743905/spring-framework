@@ -241,6 +241,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 		//解析beanName 因为如果是FactoryBean会带上&符号
 		final String beanName = transformedBeanName(name);
+		if(beanName.equals("personService")){
+			System.out.println("----");//todo
+		}
 		Object bean;
 
 		// Eagerly check singleton cache for manually registered singletons.

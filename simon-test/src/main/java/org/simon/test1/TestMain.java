@@ -16,7 +16,7 @@ public class TestMain {
 
 	@Test
 	public void test1(){
-		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:spring.xml");
 		Arrays.stream(ctx.getBeanDefinitionNames())
 				.forEach(name -> {
 					System.out.println("name:"+name+">>>"+((ClassPathXmlApplicationContext) ctx).getBeanFactory().getBeanDefinition(name).getClass().getName());
